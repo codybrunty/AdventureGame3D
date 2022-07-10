@@ -2895,6 +2895,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7359fa52c6a62264d8313319f5522ee9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  cinemachineTargetGroup: {fileID: 0}
 --- !u!1 &8713308840814379343
 GameObject:
   m_ObjectHideFlags: 0
@@ -2973,6 +2974,7 @@ GameObject:
   - component: {fileID: 1083729525268675280}
   - component: {fileID: 4766849299141588118}
   - component: {fileID: 2865588986366520941}
+  - component: {fileID: 925209493306052039}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3019,7 +3021,29 @@ MonoBehaviour:
   <InputReader>k__BackingField: {fileID: 4766849299141588118}
   <Animator>k__BackingField: {fileID: 2865588986366520941}
   <MovementSpeed_FreeLook>k__BackingField: 5
+  <MovementSpeed_Target>k__BackingField: 5
   <RotationDamping>k__BackingField: 15
+  <Targeter>k__BackingField: {fileID: 4481900863040265200}
+  <ForceReceiver>k__BackingField: {fileID: 925209493306052039}
+  <Attacks>k__BackingField:
+  - <AnimationName>k__BackingField: Light_Attack_1
+    <TransitionDuration>k__BackingField: 0.1
+    <ComboStateIndex>k__BackingField: 1
+    <ComboAttackTime>k__BackingField: 0.6
+    <ForceTime>k__BackingField: 0.35
+    <Force>k__BackingField: 15
+  - <AnimationName>k__BackingField: Light_Attack_2
+    <TransitionDuration>k__BackingField: 0.1
+    <ComboStateIndex>k__BackingField: 2
+    <ComboAttackTime>k__BackingField: 0.5
+    <ForceTime>k__BackingField: 0.35
+    <Force>k__BackingField: 15
+  - <AnimationName>k__BackingField: Light_Attack_3
+    <TransitionDuration>k__BackingField: 0.2
+    <ComboStateIndex>k__BackingField: -1
+    <ComboAttackTime>k__BackingField: 0
+    <ForceTime>k__BackingField: 0.35
+    <Force>k__BackingField: 20
 --- !u!143 &1083729525268675280
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3070,3 +3094,18 @@ Animator:
   m_HasTransformHierarchy: 1
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorControllerStateOnDisable: 0
+--- !u!114 &925209493306052039
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810416435570808171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5009a7d0c1411624a9383024282686cb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterController: {fileID: 1083729525268675280}
+  drag: 0.1
+  impact: {x: 0, y: 0, z: 0}

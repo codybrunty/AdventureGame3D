@@ -4,37 +4,60 @@ using UnityEngine;
 
 public class PlayerTargetState : PlayerBaseState
 {
-    public PlayerTargetState(PlayerStateMachine stateMachine) : base(stateMachine) {}
-    private readonly int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
+    public PlayerTargetState(PlayerStateMachine stateMachine) : base(stateMachine) { }
+
+    private readonly int TargetBlendTreeHash = Animator.StringToHash("TargetBlendTree");
+    private readonly int TargetForwardSpeedHash = Animator.StringToHash("TargetForwardSpeed");
+    private readonly int TargetRightSpeedHash = Animator.StringToHash("TargetRightSpeed");
     private const float AnimatorDampTime = 0.1f;
 
     public override void Enter() {
         stateMachine.InputReader.TargetEvent += CancelTarget;
+        stateMachine.InputReader.AttackEvent += Attack;
+        stateMachine.Animator.Play(TargetBlendTreeHash);
     }
 
     public override void Tick(float deltaTime) {
-        Vector3 movement = CalculateMovement();
-        stateMachine.CharacterController.Move(movement * deltaTime * stateMachine.MovementSpeed_FreeLook);
-        if (movement == Vector3.zero) {
-            stateMachine.Animator.SetFloat(FreeLookSpeedHash, 0f, AnimatorDampTime, deltaTime);
+        if (stateMachine.Targeter.CurrentTarget == null) {
+            stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
             return;
         }
-        stateMachine.Animator.SetFloat(FreeLookSpeedHash, 1f, AnimatorDampTime, deltaTime);
-        FaceMovementDirection(movement, deltaTime);
+        Vector3 movement = CalculateMovement();
+        Move(movement * stateMachine.MovementSpeed_Target, deltaTime);
+
+        UpdateAnimator(deltaTime);
+
+        FaceTarget();
     }
     public override void Exit() {
         stateMachine.InputReader.TargetEvent -= CancelTarget;
+        stateMachine.InputReader.AttackEvent -= Attack;
     }
 
     public void CancelTarget() {
+        stateMachine.Targeter.CancelTarget();
         stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
     }
     private Vector3 CalculateMovement() {
-        Vector3 camera_forward = new Vector3(stateMachine.MainCameraTransform.forward.x, 0f, stateMachine.MainCameraTransform.forward.z);
-        Vector3 camera_right = new Vector3(stateMachine.MainCameraTransform.right.x, 0f, stateMachine.MainCameraTransform.right.z);
-        return camera_forward.normalized * stateMachine.InputReader.MovementValue.y + camera_right.normalized * stateMachine.InputReader.MovementValue.x;
+        Vector3 movement = new Vector3();
+        movement += stateMachine.transform.right * stateMachine.InputReader.MovementValue.x;
+        movement += stateMachine.transform.forward * stateMachine.InputReader.MovementValue.y;
+        return movement;
     }
-    private void FaceMovementDirection(Vector3 movement, float deltaTime) {
-        stateMachine.transform.rotation = Quaternion.Lerp(stateMachine.transform.rotation, Quaternion.LookRotation(movement), deltaTime * stateMachine.RotationDamping);
+
+    private void UpdateAnimator(float deltaTime) {
+        if (stateMachine.InputReader.MovementValue.x == 0f && stateMachine.InputReader.MovementValue.y == 0f) {
+            stateMachine.Animator.SetFloat(TargetForwardSpeedHash, 0f, AnimatorDampTime, deltaTime); 
+            stateMachine.Animator.SetFloat(TargetRightSpeedHash, 0f, AnimatorDampTime, deltaTime);
+        }
+        else{
+            stateMachine.Animator.SetFloat(TargetForwardSpeedHash, stateMachine.InputReader.MovementValue.y, AnimatorDampTime, deltaTime);
+            stateMachine.Animator.SetFloat(TargetRightSpeedHash, stateMachine.InputReader.MovementValue.x, AnimatorDampTime, deltaTime);
+        }
     }
+
+    private void Attack() {
+        stateMachine.SwitchState(new PlayerAttackState(stateMachine,0));
+    }
+
 }

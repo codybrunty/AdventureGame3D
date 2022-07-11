@@ -10,11 +10,13 @@ public class PlayerTargetState : PlayerBaseState
     private readonly int TargetForwardSpeedHash = Animator.StringToHash("TargetForwardSpeed");
     private readonly int TargetRightSpeedHash = Animator.StringToHash("TargetRightSpeed");
     private const float AnimatorDampTime = 0.1f;
+    private const float AnimatorCrossFadeDuration = 0.25f;
 
     public override void Enter() {
-        stateMachine.InputReader.TargetEvent += CancelTarget;
+        stateMachine.InputReader.TargetEvent += CancelTarget; 
         stateMachine.InputReader.AttackEvent += Attack;
-        stateMachine.Animator.Play(TargetBlendTreeHash);
+        stateMachine.InputReader.HeavyAttackEvent += HeavyAttack;
+        stateMachine.Animator.CrossFadeInFixedTime(TargetBlendTreeHash, AnimatorCrossFadeDuration);
     }
 
     public override void Tick(float deltaTime) {
@@ -32,17 +34,12 @@ public class PlayerTargetState : PlayerBaseState
     public override void Exit() {
         stateMachine.InputReader.TargetEvent -= CancelTarget;
         stateMachine.InputReader.AttackEvent -= Attack;
+        stateMachine.InputReader.HeavyAttackEvent -= HeavyAttack;
     }
 
     public void CancelTarget() {
         stateMachine.Targeter.CancelTarget();
         stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
-    }
-    private Vector3 CalculateMovement() {
-        Vector3 movement = new Vector3();
-        movement += stateMachine.transform.right * stateMachine.InputReader.MovementValue.x;
-        movement += stateMachine.transform.forward * stateMachine.InputReader.MovementValue.y;
-        return movement;
     }
 
     private void UpdateAnimator(float deltaTime) {
@@ -59,5 +56,7 @@ public class PlayerTargetState : PlayerBaseState
     private void Attack() {
         stateMachine.SwitchState(new PlayerAttackState(stateMachine,0));
     }
-
+    private void HeavyAttack() {
+        stateMachine.SwitchState(new PlayerHeavyAttackState(stateMachine, 0));
+    }
 }

@@ -9,11 +9,13 @@ public class PlayerFreeLookState : PlayerBaseState{
     private readonly int FreeLookBlendTreeHash = Animator.StringToHash("FreeLookBlendTree");
     private readonly int FreeLookSpeedHash = Animator.StringToHash("FreeLookSpeed");
     private const float AnimatorDampTime = 0.1f;
+    private const float AnimatorCrossFadeDuration = 0.25f;
 
     public override void Enter() {
         stateMachine.InputReader.TargetEvent += Target;
         stateMachine.InputReader.AttackEvent += Attack;
-        stateMachine.Animator.Play(FreeLookBlendTreeHash);
+        stateMachine.InputReader.HeavyAttackEvent += HeavyAttack;
+        stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTreeHash, AnimatorCrossFadeDuration);
     }
 
     public override void Tick(float deltaTime) {
@@ -26,18 +28,13 @@ public class PlayerFreeLookState : PlayerBaseState{
     public override void Exit() {
         stateMachine.InputReader.TargetEvent -= Target;
         stateMachine.InputReader.AttackEvent -= Attack;
+        stateMachine.InputReader.HeavyAttackEvent -= HeavyAttack;
     }
 
     private void Target() {
         if (stateMachine.Targeter.SelectTarget()) {
             stateMachine.SwitchState(new PlayerTargetState(stateMachine));
         }
-    }
-
-    private Vector3 CalculateMovement() {
-        Vector3 camera_forward = new Vector3(stateMachine.MainCameraTransform.forward.x, 0f, stateMachine.MainCameraTransform.forward.z);
-        Vector3 camera_right = new Vector3(stateMachine.MainCameraTransform.right.x, 0f, stateMachine.MainCameraTransform.right.z);
-        return camera_forward.normalized * stateMachine.InputReader.MovementValue.y + camera_right.normalized * stateMachine.InputReader.MovementValue.x;
     }
 
     private void UpdateAnimator(Vector3 movement, float deltaTime) {
@@ -54,11 +51,10 @@ public class PlayerFreeLookState : PlayerBaseState{
         }
     }
 
-    private void FaceMovementDirection(Vector3 movement, float deltaTime) {
-        if (movement == Vector3.zero) { return; }
-        stateMachine.transform.rotation = Quaternion.Lerp(stateMachine.transform.rotation,Quaternion.LookRotation(movement),deltaTime * stateMachine.RotationDamping);
-    }
     private void Attack() {
-        stateMachine.SwitchState(new PlayerAttackState(stateMachine,0));
+        stateMachine.SwitchState(new PlayerAttackState(stateMachine, 0));
+    }
+    private void HeavyAttack() {
+        stateMachine.SwitchState(new PlayerHeavyAttackState(stateMachine, 0));
     }
 }

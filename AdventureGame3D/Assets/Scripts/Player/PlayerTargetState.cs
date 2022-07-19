@@ -16,6 +16,7 @@ public class PlayerTargetState : PlayerBaseState
         stateMachine.InputReader.TargetEvent += CancelTarget; 
         stateMachine.InputReader.AttackEvent += Attack;
         stateMachine.InputReader.HeavyAttackEvent += HeavyAttack;
+        stateMachine.InputReader.BlockEvent += StartBlocking;
         stateMachine.Animator.CrossFadeInFixedTime(TargetBlendTreeHash, AnimatorCrossFadeDuration);
     }
 
@@ -35,6 +36,7 @@ public class PlayerTargetState : PlayerBaseState
         stateMachine.InputReader.TargetEvent -= CancelTarget;
         stateMachine.InputReader.AttackEvent -= Attack;
         stateMachine.InputReader.HeavyAttackEvent -= HeavyAttack;
+        stateMachine.InputReader.BlockEvent -= StartBlocking;
     }
 
     public void CancelTarget() {
@@ -58,5 +60,8 @@ public class PlayerTargetState : PlayerBaseState
     }
     private void HeavyAttack() {
         stateMachine.SwitchState(new PlayerHeavyAttackState(stateMachine, 0));
+    }
+    private void StartBlocking() {
+        stateMachine.SwitchState(new PlayerBlockState(stateMachine));
     }
 }

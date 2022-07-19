@@ -33,4 +33,12 @@ public abstract class PlayerBaseState : State{
         stateMachine.transform.rotation = Quaternion.Lerp(stateMachine.transform.rotation, Quaternion.LookRotation(movement), deltaTime * stateMachine.RotationDamping);
     }
 
+    protected void ReturnToCurrentMoveState() {
+        if(stateMachine.Targeter.CurrentTarget != null) {
+            stateMachine.SwitchState(new PlayerTargetState(stateMachine));
+        }
+        else {
+            stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
+        }
+    }
 }

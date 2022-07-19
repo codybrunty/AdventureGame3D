@@ -12,6 +12,8 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions{
     public event Action TargetEvent;
     public event Action AttackEvent;
     public event Action HeavyAttackEvent;
+    public event Action BlockEvent;
+    public event Action EndBlockEvent;
 
     private Controls controls;
 
@@ -56,5 +58,14 @@ public class InputReader : MonoBehaviour, Controls.IPlayerActions{
     public void OnHeavyAttack(InputAction.CallbackContext context) {
         if (!context.performed) { return; }
         HeavyAttackEvent?.Invoke();
+    }
+
+    public void OnBlock(InputAction.CallbackContext context) {
+        if (context.started) {
+            BlockEvent?.Invoke();
+        }
+        if (context.canceled) {
+            EndBlockEvent?.Invoke();
+        }
     }
 }

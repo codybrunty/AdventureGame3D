@@ -3055,6 +3055,7 @@ GameObject:
   - component: {fileID: 925209493306052039}
   - component: {fileID: 3140263371804681315}
   - component: {fileID: 6407104604269578177}
+  - component: {fileID: 4321747279746843181}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -3100,11 +3101,14 @@ MonoBehaviour:
   <CharacterController>k__BackingField: {fileID: 1083729525268675280}
   <InputReader>k__BackingField: {fileID: 4766849299141588118}
   <Animator>k__BackingField: {fileID: 2865588986366520941}
+  <Ragdoll>k__BackingField: {fileID: 4321747279746843181}
+  <Health>k__BackingField: {fileID: 6407104604269578177}
   <MovementSpeed_FreeLook>k__BackingField: 5
   <MovementSpeed_Target>k__BackingField: 5
   <RotationDamping>k__BackingField: 15
   <Targeter>k__BackingField: {fileID: 4481900863040265200}
   <ForceReceiver>k__BackingField: {fileID: 925209493306052039}
+  <WeaponDamage>k__BackingField: {fileID: 3422743638016485688}
   <Attacks>k__BackingField:
   - <AnimationName>k__BackingField: Light_Attack_1
     <TransitionDuration>k__BackingField: 0.1
@@ -3115,6 +3119,7 @@ MonoBehaviour:
     <Force>k__BackingField:
     - 1.25
     <Damage>k__BackingField: 10
+    <Knockback>k__BackingField: 5
   - <AnimationName>k__BackingField: Light_Attack_2
     <TransitionDuration>k__BackingField: 0.1
     <ComboStateIndex>k__BackingField: 2
@@ -3124,6 +3129,7 @@ MonoBehaviour:
     <Force>k__BackingField:
     - 12
     <Damage>k__BackingField: 15
+    <Knockback>k__BackingField: 5
   - <AnimationName>k__BackingField: Light_Attack_3
     <TransitionDuration>k__BackingField: 0.2
     <ComboStateIndex>k__BackingField: -1
@@ -3135,6 +3141,7 @@ MonoBehaviour:
     - -1
     - 10
     <Damage>k__BackingField: 20
+    <Knockback>k__BackingField: 5
   <HeavyAttacks>k__BackingField:
   - <AnimationName>k__BackingField: Heavy_Attack_1
     <TransitionDuration>k__BackingField: 0.2
@@ -3149,7 +3156,7 @@ MonoBehaviour:
     - 8
     - 10
     <Damage>k__BackingField: 25
-  <WeaponDamage>k__BackingField: {fileID: 3422743638016485688}
+    <Knockback>k__BackingField: 5
 --- !u!143 &1083729525268675280
 CharacterController:
   m_ObjectHideFlags: 0
@@ -3213,8 +3220,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   characterController: {fileID: 1083729525268675280}
+  NavMeshAgent: {fileID: 0}
   drag: 0.1
-  impact: {x: 0, y: 0, z: 0}
 --- !u!114 &3140263371804681315
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3242,3 +3249,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxHealth: 100
   health: 0
+--- !u!114 &4321747279746843181
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8810416435570808171}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a1ab6afc6f2650840ae7e0f9138f5c81, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  animator: {fileID: 2865588986366520941}
+  characterController: {fileID: 1083729525268675280}

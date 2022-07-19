@@ -7,6 +7,8 @@ public class PlayerStateMachine : StateMachine{
     [field: SerializeField] public CharacterController CharacterController { get; private set; }
     [field: SerializeField] public InputReader InputReader { get; private set; }
     [field: SerializeField] public Animator Animator { get; private set; }
+    [field: SerializeField] public Ragdoll Ragdoll { get; private set; }
+    [field: SerializeField] public Health Health { get; private set; }
     [field: SerializeField] public float MovementSpeed_FreeLook { get; private set; }
     [field: SerializeField] public float MovementSpeed_Target { get; private set; }
     [field: SerializeField] public float RotationDamping { get; private set; }
@@ -21,5 +23,18 @@ public class PlayerStateMachine : StateMachine{
         MainCameraTransform = Camera.main.transform;
         SwitchState(new PlayerFreeLookState(this));
     }
-
+    private void OnEnable() {
+        Health.OnTakeDamage += HandleTakeDamage;
+        Health.OnDie += HandleDeath;
+    }
+    private void OnDisable() {
+        Health.OnTakeDamage -= HandleTakeDamage;
+        Health.OnDie -= HandleDeath;
+    }
+    private void HandleTakeDamage() {
+        SwitchState(new PlayerImpactState(this));
+    }
+    private void HandleDeath() {
+        SwitchState(new PlayerDeathState(this));
+    }
 }

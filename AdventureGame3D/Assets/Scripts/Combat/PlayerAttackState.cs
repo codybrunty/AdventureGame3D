@@ -9,7 +9,7 @@ public class PlayerAttackState : PlayerBaseState{
 
     public PlayerAttackState(PlayerStateMachine stateMachine, int attackIndex) : base(stateMachine) {
         attack = stateMachine.Attacks[attackIndex];
-        stateMachine.WeaponDamage.SetDamage(attack.Damage);
+        stateMachine.WeaponDamage.SetAttack(attack.Damage, attack.Knockback);
     }
 
     public override void Enter() {
@@ -21,7 +21,7 @@ public class PlayerAttackState : PlayerBaseState{
         Move(deltaTime);
         FaceAttacking(deltaTime);
         TryApplyForce();
-        if (GetNormalizedTime() >= 1f) {
+        if (GetNormalizedTime(stateMachine.Animator, attack.AnimationName) >= 1f) {
             if (stateMachine.Targeter.CurrentTarget == null) {
                 stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
             }
@@ -36,19 +36,9 @@ public class PlayerAttackState : PlayerBaseState{
         stateMachine.InputReader.HeavyAttackEvent -= TryComboHeavyAttack;
     }
 
-    private float GetNormalizedTime() {
-        AnimatorStateInfo currentState = stateMachine.Animator.GetCurrentAnimatorStateInfo(0);
-        if (currentState.IsName(attack.AnimationName)) {
-            return currentState.normalizedTime;
-        }
-        else {
-            return 0f;
-        }
-    }
-
     private void TryComboAttack() {
         if (attack.ComboStateIndex == -1) { return; }
-        float normalizedTime = GetNormalizedTime();
+        float normalizedTime = GetNormalizedTime(stateMachine.Animator, attack.AnimationName);
 
         if (normalizedTime >= attack.ComboAttackTime) {
             stateMachine.SwitchState(new PlayerAttackState(stateMachine, attack.ComboStateIndex));
@@ -56,7 +46,7 @@ public class PlayerAttackState : PlayerBaseState{
     }
     private void TryComboHeavyAttack() {
         if (attack.ComboStateIndex != -1) { return; }
-        float normalizedTime = GetNormalizedTime();
+        float normalizedTime = GetNormalizedTime(stateMachine.Animator, attack.AnimationName);
 
         if (normalizedTime >= attack.ComboAttackTime) {
             stateMachine.SwitchState(new PlayerHeavyAttackState(stateMachine, 0));
@@ -64,7 +54,7 @@ public class PlayerAttackState : PlayerBaseState{
     }
     private void TryApplyForce() {
         if (forceTimesIndex == attack.Force.Count) { return; }
-        float normalizedTime = GetNormalizedTime();
+        float normalizedTime = GetNormalizedTime(stateMachine.Animator, attack.AnimationName);
 
         if (normalizedTime >= attack.ForceTimes[forceTimesIndex]) {
             stateMachine.ForceReceiver.AddForce(stateMachine.transform.forward * attack.Force[forceTimesIndex]);
@@ -73,7 +63,7 @@ public class PlayerAttackState : PlayerBaseState{
     }
     protected void FaceAttacking(float deltaTime) {
         if (stateMachine.Targeter.CurrentTarget == null) {
-            float normalizedTime = GetNormalizedTime();
+            float normalizedTime = GetNormalizedTime(stateMachine.Animator, attack.AnimationName);
             if (normalizedTime < attack.ComboAttackTime) {
                 FaceMovementDirection(CalculateMovement(), deltaTime);
             }

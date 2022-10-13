@@ -11,12 +11,17 @@ public class PlayerTargetState : PlayerBaseState
     private readonly int TargetRightSpeedHash = Animator.StringToHash("TargetRightSpeed");
     private const float AnimatorDampTime = 0.1f;
     private const float AnimatorCrossFadeDuration = 0.25f;
+    private Vector2 dodgeDirection;
+    private float dodgeDurationRemaining;
+    
 
     public override void Enter() {
         stateMachine.InputReader.TargetEvent += CancelTarget; 
         stateMachine.InputReader.AttackEvent += Attack;
         stateMachine.InputReader.HeavyAttackEvent += HeavyAttack;
         stateMachine.InputReader.BlockEvent += StartBlocking;
+        stateMachine.InputReader.DodgeEvent += Dodge;
+        stateMachine.InputReader.JumpEvent += Jump;
         stateMachine.Animator.CrossFadeInFixedTime(TargetBlendTreeHash, AnimatorCrossFadeDuration);
     }
 
@@ -25,7 +30,18 @@ public class PlayerTargetState : PlayerBaseState
             stateMachine.SwitchState(new PlayerFreeLookState(stateMachine));
             return;
         }
-        Vector3 movement = CalculateMovement();
+
+        Vector3 movement;
+        if (dodgeDurationRemaining > 0) {
+            movement = stateMachine.transform.right * dodgeDirection.x * stateMachine.DodgeLength / stateMachine.DodgeDuration;
+            movement += stateMachine.transform.forward * dodgeDirection.y * stateMachine.DodgeLength / stateMachine.DodgeDuration;
+            dodgeDurationRemaining = Mathf.Max(dodgeDurationRemaining - deltaTime,0f);
+        }
+        else {
+            movement = CalculateMovement();
+        }
+        
+        
         Move(movement * stateMachine.MovementSpeed_Target, deltaTime);
 
         UpdateAnimator(deltaTime);
@@ -37,6 +53,8 @@ public class PlayerTargetState : PlayerBaseState
         stateMachine.InputReader.AttackEvent -= Attack;
         stateMachine.InputReader.HeavyAttackEvent -= HeavyAttack;
         stateMachine.InputReader.BlockEvent -= StartBlocking;
+        stateMachine.InputReader.DodgeEvent -= Dodge;
+        stateMachine.InputReader.JumpEvent -= Jump;
     }
 
     public void CancelTarget() {
@@ -64,4 +82,16 @@ public class PlayerTargetState : PlayerBaseState
     private void StartBlocking() {
         stateMachine.SwitchState(new PlayerBlockState(stateMachine));
     }
+
+    private void Dodge() {
+        if (Time.time - stateMachine.PreviousDodgeTime > stateMachine.DodgeCooldown) {
+            dodgeDirection = stateMachine.InputReader.MovementValue;
+            dodgeDurationRemaining = stateMachine.DodgeDuration;
+            stateMachine.SetDodgeTime(Time.time);
+        }
+    }
+    private void Jump() {
+        stateMachine.SwitchState(new PlayerJumpState(stateMachine));
+    }
+
 }

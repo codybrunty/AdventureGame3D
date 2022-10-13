@@ -14,8 +14,9 @@ public class PlayerFreeLookState : PlayerBaseState{
     public override void Enter() {
         stateMachine.InputReader.TargetEvent += Target;
         stateMachine.InputReader.AttackEvent += Attack;
-        stateMachine.InputReader.HeavyAttackEvent += HeavyAttack; 
+        stateMachine.InputReader.HeavyAttackEvent += HeavyAttack;
         stateMachine.InputReader.BlockEvent += StartBlocking;
+        stateMachine.InputReader.JumpEvent += Jump;
         stateMachine.Animator.CrossFadeInFixedTime(FreeLookBlendTreeHash, AnimatorCrossFadeDuration);
     }
 
@@ -31,6 +32,7 @@ public class PlayerFreeLookState : PlayerBaseState{
         stateMachine.InputReader.AttackEvent -= Attack;
         stateMachine.InputReader.HeavyAttackEvent -= HeavyAttack;
         stateMachine.InputReader.BlockEvent -= StartBlocking;
+        stateMachine.InputReader.JumpEvent -= Jump;
     }
 
     private void Target() {
@@ -62,4 +64,8 @@ public class PlayerFreeLookState : PlayerBaseState{
     private void StartBlocking() {
         stateMachine.SwitchState(new PlayerBlockState(stateMachine));
     }
+    private void Jump() {
+        stateMachine.SwitchState(new PlayerJumpState(stateMachine));
+    }
+
 }

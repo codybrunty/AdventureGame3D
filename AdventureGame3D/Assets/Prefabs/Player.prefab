@@ -3106,6 +3106,10 @@ MonoBehaviour:
   <MovementSpeed_FreeLook>k__BackingField: 5
   <MovementSpeed_Target>k__BackingField: 5
   <RotationDamping>k__BackingField: 15
+  <DodgeDuration>k__BackingField: 0.1
+  <DodgeLength>k__BackingField: 0.75
+  <DodgeCooldown>k__BackingField: 1
+  <JumpForce>k__BackingField: 4
   <Targeter>k__BackingField: {fileID: 4481900863040265200}
   <ForceReceiver>k__BackingField: {fileID: 925209493306052039}
   <WeaponDamage>k__BackingField: {fileID: 3422743638016485688}

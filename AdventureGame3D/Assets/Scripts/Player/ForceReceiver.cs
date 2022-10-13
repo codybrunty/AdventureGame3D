@@ -38,4 +38,9 @@ public class ForceReceiver : MonoBehaviour {
             NavMeshAgent.enabled = false;
         }
     }
+
+    public void Jump(float jumpForce) {
+        veritcalVelocity += jumpForce;
+    }
+
 }
